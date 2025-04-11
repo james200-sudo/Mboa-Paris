@@ -85,80 +85,72 @@ cd mboa-paris-backend
     🧾 À propos + contact support
 
 ## 📚 Endpoints principaux
-- /api/auth
+    - /api/auth
 
-- /api/users
+    - /api/users
 
-- /api/messages
+    - /api/messages
 
-- /api/group-messages
+    - /api/group-messages
 
-- /api/events
+    - /api/events
 
-- /api/tickets
+    - /api/tickets
 
-- /api/entreprises
+    - /api/entreprises
 
-- /api/favorites
+    - /api/favorites
 
-- /api/follows
+    - /api/follows
 
-- /api/reports/messages
+    - /api/reports/messages
 
-- /api/support
+    - /api/support
 
-- /api/about
+    - /api/about
 
 ## 🧠 WebSocket
-Intégré avec Socket.io
+    Intégré avec Socket.io
 
-Chaque utilisateur est mappé à son socket.id
+    Chaque utilisateur est mappé à son socket.id
 
-Messagerie privée et de groupe en live
+    Messagerie privée et de groupe en live
 
-Statut de connexion en temps réel
+    Statut de connexion en temps réel
 
 ## 🔔 Notifications Push
-Firebase Cloud Messaging
+    Firebase Cloud Messaging
 
-Envoi automatique lors de nouveaux messages
+    Envoi automatique lors de nouveaux messages
 
-Supprime automatiquement les tokens invalides
+    Supprime automatiquement les tokens invalides
 
-Désactive l’envoi si l’utilisateur est déjà connecté
+    Désactive l’envoi si l’utilisateur est déjà connecté
 
 ## 🗺️ Google Maps
-Chaque entreprise contient latitude & longitude
+    Chaque entreprise contient latitude & longitude
 
-Le front peut afficher une carte interactive
+    Le front peut afficher une carte interactive
 
-Géocodage possible via Google Maps API
+    Géocodage possible via Google Maps API
 
 ## 🧾 Support et À propos
-/api/about → infos de la plateforme
+    /api/about → infos de la plateforme
 
-/api/support → envoie un message au support (Nodemailer)
+    /api/support → envoie un message au support (Nodemailer)
 
 ## 🛠️ À faire (améliorations possibles)
-Intégration Swagger (OpenAPI)
+    Intégration Swagger (OpenAPI)
 
-Ajout de tests unitaires
+    Ajout de tests unitaires
 
-Pagination et recherche avancée
+    Pagination et recherche avancée
 
-Upload d’images via Cloudinary / S3
+    Upload d’images via Cloudinary / S3
 
 ## 🙋‍♂️ Auteur
 Projet réalisé par [Amengle James / GitHub Handle]
 © Mboa Paris – 2025
-
-
-
-## 📝 Tu peux bien sûr :
-
-- Changer l’URL Git dans git clone
-- Modifier l’auteur, les emails, etc.
-- Ajouter un badge ou une image si tu veux décorer
 
 
 
