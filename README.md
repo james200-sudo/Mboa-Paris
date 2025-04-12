@@ -20,7 +20,7 @@ Backend Node.js complet pour la plateforme communautaire Mboa Paris : gestion de
 1. Clone le repo
 
 
-git clone https://github.com/tonprofil/mboa-paris-backend.git
+git clone https://github.com/james200-sudo/mboa-paris-backend.git
 cd mboa-paris-backend
 
 

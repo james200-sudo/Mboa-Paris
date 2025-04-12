@@ -23,37 +23,53 @@ global.connectedUsers = users;
 const { connectDB } = require('./config/db');
 connectDB();
 
-// Sync models
+// Import de tous les modèles
+const User = require('./models/User');
 const Post = require('./models/Post');
 const Comment = require('./models/Comment');
 const Like = require('./models/Like');
-const User = require('./models/User');
 const Event = require('./models/Event');
 const ReportedMessage = require('./models/ReportedMessage');
 const DeviceToken = require('./models/DeviceToken');
+const Group = require('./models/Group');
+const GroupMessage = require('./models/GroupMessage');
 const GroupMember = require('./models/GroupMember');
+const BlockedUser = require('./models/BlockedUser');
 const RendezVous = require('./models/RendezVous');
 const Entreprise = require('./models/Entreprise');
 const Favorite = require('./models/Favorite');
 const Follow = require('./models/Follow');
-
-Favorite.sync({ alter: true });
-Follow.sync({ alter: true });
-
-Entreprise.sync({ alter: true });
-RendezVous.sync({ alter: true });
+const Ticket = require('./models/Ticket');
 
 
-GroupMember.sync({ alter: true });
+// Relations claires et uniques
+User.hasMany(Ticket, { foreignKey: 'userId' });
+Ticket.belongsTo(User, { foreignKey: 'userId' });
+
+Event.hasMany(Ticket, { foreignKey: 'eventId' });
+Ticket.belongsTo(Event, { foreignKey: 'eventId' });
+
+// Synchronisation
+Ticket.sync({ alter: true });
+// Synchronisation des modèles (tu peux ajuster selon alter ou force)
+User.sync();
 Post.sync();
 Comment.sync();
 Like.sync();
 Event.sync();
-User.sync({  force: true });
-ReportedMessage.sync({ force: true });
-DeviceToken.sync({ alter: true });
+ReportedMessage.sync();
+DeviceToken.sync();
+Group.sync();
+GroupMessage.sync();
+GroupMember.sync();
+BlockedUser.sync();
+RendezVous.sync();
+Entreprise.sync();
+Favorite.sync();
+Follow.sync();
+Ticket.sync();
 
-// WebSocket
+// WebSocket events
 io.on('connection', socket => {
   console.log('✅ Client connecté via WebSocket');
 
@@ -78,16 +94,14 @@ io.on('connection', socket => {
     socket.join(`group-${groupId}`);
     console.log(`👥 Socket ${socket.id} joined group ${groupId}`);
   });
-  
+
   socket.on('leave-group', groupId => {
     socket.leave(`group-${groupId}`);
     console.log(`👋 Socket ${socket.id} left group ${groupId}`);
   });
-  
 });
 
 // Lancement du serveur Express + WebSocket
 server.listen(PORT, () => {
   console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
-  console.log(`✅ Server + WebSocket started on http://localhost:${PORT}`);
 });
