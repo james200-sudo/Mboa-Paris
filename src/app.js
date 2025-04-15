@@ -31,6 +31,8 @@ app.get('/', (req, res) => {
   res.send('Bienvenue sur l’API Mboa Paris 🚀 de james');
 });
 const aboutRoutes = require('./routes/about');const supportRoutes = require('./routes/support');
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/about', aboutRoutes);
 app.use('/api/favorites', favoriteRoutes);
