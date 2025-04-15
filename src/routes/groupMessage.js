@@ -1,22 +1,8 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const express = require('express');
+const router = express.Router();
+const auth = require('../middlewares/auth');
+const { sendGroupMessage } = require('../controllers/groupMessageController');
 
-const GroupMessage = sequelize.define('GroupMessage', {
-  groupId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  senderId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  }
-}, {
-  tableName: 'group_messages',
-  timestamps: true
-});
+router.post('/', auth, sendGroupMessage);
 
-module.exports = GroupMessage;
+module.exports = router;
