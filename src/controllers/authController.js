@@ -21,23 +21,33 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    if (!user.isActive) {
-        return res.status(403).json({ message: "Account suspended" });
-    }
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    console.log('🧾 User found:', user.email);
+    console.log('🔐 Password (raw from request):', password);
+    console.log('🧊 Password (hashed in DB):', user.password);
+
     const isValid = await bcrypt.compare(password, user.password);
+    console.log('✅ Password match:', isValid);
+
     if (!isValid) return res.status(401).json({ message: "Invalid password" });
 
-    const token = jwt.sign( { id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' } );
-    
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
     res.status(200).json({ user, token });
+
   } catch (err) {
+    console.error('❌ Login error:', err);
     res.status(500).json({ message: err.message });
   }
 };
+
+
 
 exports.updateProfile = async (req, res) => {
     const userId = req.user.id;
