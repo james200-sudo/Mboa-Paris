@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Documentation API – Authentification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <div class="container py-5">
+    <h1 class="mb-4">🔐 Authentification & Profil Utilisateur – Documentation API</h1>
+
+    <!-- Route: /register -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        POST /api/auth/register
+      </div>
+      <div class="card-body">
+        <p>Créer un nouveau compte utilisateur.</p>
+        <h6>Corps de la requête (JSON) :</h6>
+        <pre><code>{
+  "name": "string",
+  "email": "string",
+  "password": "string"
+}</code></pre>
+        <p><strong>Validation :</strong> Tous les champs sont obligatoires</p>
+        <p><strong>Retour :</strong> Objet utilisateur créé</p>
+      </div>
+    </div>
+
+    <!-- Route: /login -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        POST /api/auth/login
+      </div>
+      <div class="card-body">
+        <p>Connecte un utilisateur et renvoie un token JWT.</p>
+        <h6>Corps de la requête (JSON) :</h6>
+        <pre><code>{
+  "email": "string",
+  "password": "string"
+}</code></pre>
+        <p><strong>Retour :</strong> Objet utilisateur + token JWT</p>
+      </div>
+    </div>
+
+    <!-- Route: /forgot-password -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        POST /api/auth/forgot-password
+      </div>
+      <div class="card-body">
+        <p>Demande de réinitialisation de mot de passe (par email).</p>
+        <h6>Corps de la requête (JSON) :</h6>
+        <pre><code>{
+  "email": "string"
+}</code></pre>
+        <p><strong>Retour :</strong> Message de confirmation d’envoi de l’email</p>
+      </div>
+    </div>
+
+    <!-- Route: /reset-password -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        POST /api/auth/reset-password
+      </div>
+      <div class="card-body">
+        <p>Réinitialise le mot de passe à l’aide d’un token valide.</p>
+        <h6>Corps de la requête (JSON) :</h6>
+        <pre><code>{
+  "token": "string",
+  "newPassword": "string"
+}</code></pre>
+        <p><strong>Retour :</strong> Message de confirmation de mise à jour</p>
+      </div>
+    </div>
+
+    <!-- Route: /update-profile -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        PUT /api/auth/update-profile
+      </div>
+      <div class="card-body">
+        <p>Met à jour les informations du profil utilisateur connecté.</p>
+        <h6>En-tête HTTP :</h6>
+        <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+        <h6>Corps de la requête (JSON) :</h6>
+        <pre><code>{
+  "name": "string (optionnel)",
+  "email": "string (optionnel)",
+  "bio": "string (optionnel)",
+  "photo": "string (optionnel)"
+}</code></pre>
+        <p><strong>Retour :</strong> Objet utilisateur mis à jour</p>
+      </div>
+    </div>
+
+
+    <!-- Blocage d’utilisateur -->
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      POST /api/moderation/block
+    </div>
+    <div class="card-body">
+      <p>Permet à un utilisateur de bloquer un autre utilisateur. L’utilisateur bloqué ne pourra plus envoyer de messages.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "userId": "integer"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <!-- Déblocage d’utilisateur -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/moderation/unblock
+    </div>
+    <div class="card-body">
+      <p>Permet de débloquer un utilisateur précédemment bloqué.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "userId": "integer"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+    
+  <!-- 🔐 CRUD Entreprise (Admin) -->
+
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">POST /api/entreprises</div>
+    <div class="card-body">
+      <p>Créer une nouvelle entreprise (réservé aux administrateurs).</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "name": "string",
+    "address": "string",
+    "description": "string (optionnel)"
+  }</code></pre>
+      <p><strong>Retour :</strong> Entreprise créée</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">GET /api/entreprises</div>
+    <div class="card-body">
+      <p>Récupère la liste de toutes les entreprises (accès utilisateur authentifié).</p>
+      <p><strong>Retour :</strong> Tableau des entreprises</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">GET /api/entreprises/:id</div>
+    <div class="card-body">
+      <p>Récupère les détails d'une entreprise par son ID.</p>
+      <p><strong>Paramètre URL :</strong> id (identifiant de l’entreprise)</p>
+      <p><strong>Retour :</strong> Détails de l’entreprise</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">PUT /api/entreprises/:id</div>
+    <div class="card-body">
+      <p>Met à jour une entreprise (réservé aux administrateurs).</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "name": "string (optionnel)",
+    "address": "string (optionnel)",
+    "description": "string (optionnel)"
+  }</code></pre>
+      <p><strong>Retour :</strong> Entreprise mise à jour</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">DELETE /api/entreprises/:id</div>
+    <div class="card-body">
+      <p>Supprime une entreprise (réservé aux administrateurs).</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <!-- 📅 Réserver un rendez-vous -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">POST /api/entreprises/:id/reserver</div>
+    <div class="card-body">
+      <p>Permet à un utilisateur connecté de réserver un rendez-vous avec une entreprise.</p>
+      <p><strong>Paramètre URL :</strong> id (ID de l’entreprise)</p>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "date": "YYYY-MM-DD",
+    "heure": "HH:MM",
+    "motif": "string (optionnel)"
+  }</code></pre>
+      <p><strong>Retour :</strong> Rendez-vous réservé</p>
+    </div>
+  </div>
+  
+  <!-- 👤 Mes rendez-vous -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">GET /api/entreprises/me/rendezvous</div>
+    <div class="card-body">
+      <p>Récupère tous les rendez-vous de l’utilisateur connecté.</p>
+      <p><strong>Retour :</strong> Liste de rendez-vous de l’utilisateur</p>
+    </div>
+  </div>
+  
+  <!-- 🏢 Rendez-vous pour une entreprise -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">GET /api/entreprises/:id/rendezvous</div>
+    <div class="card-body">
+      <p>Récupère tous les rendez-vous pour une entreprise donnée (réservé aux admins).</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <p><strong>Retour :</strong> Liste de tous les rendez-vous associés à cette entreprise</p>
+    </div>
+  </div>
+
+  <!-- 🎉 Gestion des Événements -->
+
+<!-- GET /api/events -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/events
+    </div>
+    <div class="card-body">
+      <p>Récupère la liste de tous les événements (accès public).</p>
+      <p><strong>Retour :</strong> Tableau contenant tous les événements publiés.</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/events/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/events/:id
+    </div>
+    <div class="card-body">
+      <p>Affiche les détails d’un événement spécifique.</p>
+      <p><strong>Paramètre URL :</strong> id (identifiant de l’événement)</p>
+      <p><strong>Retour :</strong> Informations détaillées sur l’événement</p>
+    </div>
+  </div>
+  
+  <!-- POST /api/events -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/events
+    </div>
+    <div class="card-body">
+      <p>Créer un nouvel événement (réservé aux administrateurs).</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "title": "string",
+    "description": "string (optionnel)",
+    "date": "YYYY-MM-DD",
+    "location": "string",
+    "image": "string (URL ou chemin)"
+  }</code></pre>
+      <p><strong>Retour :</strong> L’événement créé</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/events/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PUT /api/events/:id
+    </div>
+    <div class="card-body">
+      <p>Met à jour les informations d’un événement (réservé aux administrateurs).</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps JSON (partiellement modifiable) :</h6>
+      <pre><code>{
+    "title": "string",
+    "description": "string",
+    "date": "YYYY-MM-DD",
+    "location": "string",
+    "image": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> L’événement mis à jour</p>
+    </div>
+  </div>
+  
+  <!-- DELETE /api/events/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/events/:id
+    </div>
+    <div class="card-body">
+      <p>Supprime un événement existant (réservé aux administrateurs).</p>
+      <p><strong>Paramètre URL :</strong> id (identifiant de l’événement)</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation de suppression</p>
+    </div>
+  </div>
+
+  <!-- ⭐ Gestion des favoris -->
+
+<!-- POST /api/favorites -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/favorites
+    </div>
+    <div class="card-body">
+      <p>Ajoute un élément (ex : événement, entreprise, etc.) aux favoris de l’utilisateur connecté.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "itemId": "integer",
+    "itemType": "string" // exemple : "event" ou "entreprise"
+  }</code></pre>
+      <p><strong>Retour :</strong> Confirmation avec l’élément favorisé</p>
+    </div>
+  </div>
+  
+  <!-- DELETE /api/favorites -->
+  <div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/favorites
+    </div>
+    <div class="card-body">
+      <p>Supprime un favori de la liste de l’utilisateur connecté.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "itemId": "integer",
+    "itemType": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation de suppression</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/favorites -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/favorites
+    </div>
+    <div class="card-body">
+      <p>Récupère la liste des éléments ajoutés en favoris par l’utilisateur connecté.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Tableau d’éléments favoris (events, entreprises...)</p>
+    </div>
+  </div>
+
+  <!-- 🔔 Suivi d’entreprises -->
+
+<!-- POST /api/follows -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/follows
+    </div>
+    <div class="card-body">
+      <p>Permet à l’utilisateur connecté de suivre une entreprise.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "entrepriseId": "integer"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation ou entreprise suivie</p>
+    </div>
+  </div>
+  
+  <!-- DELETE /api/follows -->
+  <div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/follows
+    </div>
+    <div class="card-body">
+      <p>Permet à l’utilisateur connecté de ne plus suivre une entreprise.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "entrepriseId": "integer"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation de désabonnement</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/follows -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/follows
+    </div>
+    <div class="card-body">
+      <p>Retourne la liste des entreprises actuellement suivies par l’utilisateur connecté.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Tableau des entreprises suivies</p>
+    </div>
+  </div>
+  
+  <!-- 👥 Membres d’un groupe -->
+  
+  <!-- GET /api/groups/:id/members -->
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+      GET /api/groups/:id/members
+    </div>
+    <div class="card-body">
+      <p>Affiche la liste des membres inscrits dans un groupe.</p>
+      <p><strong>Paramètre URL :</strong> id (identifiant du groupe)</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &
+    </div>
+  
+  </div>
+  
+        
+<!-- POST /api/groups -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      POST /api/groups
+    </div>
+    <div class="card-body">
+      <p>Permet à l’utilisateur d’envoyer un message dans un groupe auquel il appartient.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "groupId": "integer",
+    "content": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message envoyé avec succès (contenu + infos)</p>
+    </div>
+  </div>
+
+
+  <!-- 💬 Messagerie Privée -->
+
+<!-- POST /api/messages -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/messages
+    </div>
+    <div class="card-body">
+      <p>Permet d’envoyer un message privé à un autre utilisateur (si non bloqué).</p>
+      <h6>Middleware :</h6>
+      <pre><code>auth, checkBlocked</code></pre>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps de la requête (JSON) :</h6>
+      <pre><code>{
+    "receiverId": "integer",
+    "content": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Objet message envoyé</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/messages/:userId -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/messages/:userId
+    </div>
+    <div class="card-body">
+      <p>Récupère la conversation entre l’utilisateur connecté et un autre utilisateur.</p>
+      <p><strong>Paramètre URL :</strong> userId (ID du destinataire)</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Tableau de messages classés par date</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/messages/:id/read -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PUT /api/messages/:id/read
+    </div>
+    <div class="card-body">
+      <p>Marque un message comme lu par l’utilisateur connecté.</p>
+      <p><strong>Paramètre URL :</strong> id (ID du message à marquer comme lu)</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Objet message mis à jour (lu: true)</p>
+    </div>
+  </div>
+  
+
+  <!-- 📝 Publications (Posts) -->
+
+<!-- GET /api/posts -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/posts
+    </div>
+    <div class="card-body">
+      <p>Récupère toutes les publications disponibles (non signalées).</p>
+      <p><strong>Retour :</strong> Liste des publications</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/posts/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/posts/:id
+    </div>
+    <div class="card-body">
+      <p>Récupère les détails d’une publication spécifique.</p>
+      <p><strong>Paramètre URL :</strong> id (identifiant du post)</p>
+      <p><strong>Retour :</strong> Objet post</p>
+    </div>
+  </div>
+  
+  <!-- POST /api/posts -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/posts
+    </div>
+    <div class="card-body">
+      <p>Crée une nouvelle publication. L’image est optionnelle.</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Type :</h6>
+      <pre><code>multipart/form-data</code></pre>
+      <h6>Corps de la requête :</h6>
+      <pre><code>{
+    "content": "string",
+    "image": "fichier (image/png, image/jpg)"
+  }</code></pre>
+      <p><strong>Retour :</strong> Post créé</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/posts/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PUT /api/posts/:id
+    </div>
+    <div class="card-body">
+      <p>Modifie une publication existante. Réservé à l’auteur du post.</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "content": "string",
+    "image": "string (URL ou nom du fichier)"
+  }</code></pre>
+      <p><strong>Retour :</strong> Post modifié</p>
+    </div>
+  </div>
+  
+  <!-- DELETE /api/posts/:id -->
+  <div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/posts/:id
+    </div>
+    <div class="card-body">
+      <p>Supprime une publication existante (auteur ou admin).</p>
+      <p><strong>Paramètre URL :</strong> id</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/posts/:postId/report -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PUT /api/posts/:postId/report
+    </div>
+    <div class="card-body">
+      <p>Permet de signaler un post problématique.</p>
+      <p><strong>Paramètre URL :</strong> postId</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Post marqué comme signalé</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/posts/reported -->
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+      GET /api/posts/reported
+    </div>
+    <div class="card-body">
+      <p>Récupère tous les posts signalés (réservé aux administrateurs).</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Liste des publications signalées</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/posts/:postId/unreport -->
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+      PUT /api/posts/:postId/unreport
+    </div>
+    <div class="card-body">
+      <p>Permet à un administrateur de désignaler un post (reported = false).</p>
+      <p><strong>Paramètre URL :</strong> postId</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Post désignalé</p>
+    </div>
+  </div>
+<!-- 👍 Likes -->
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/posts/:postId/like
+    </div>
+    <div class="card-body">
+      <p>Liker ou retirer un like sur une publication.</p>
+      <p><strong>Paramètre URL :</strong> postId (ID du post)</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/posts/:postId/likes
+    </div>
+    <div class="card-body">
+      <p>Affiche la liste des utilisateurs qui ont liké le post.</p>
+      <p><strong>Paramètre URL :</strong> postId</p>
+      <p><strong>Retour :</strong> Tableau d’utilisateurs</p>
+    </div>
+  </div>
+  
+  <!-- 💬 Commentaires -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      POST /api/posts/:postId/comments
+    </div>
+    <div class="card-body">
+      <p>Ajoute un commentaire à une publication.</p>
+      <p><strong>Paramètre URL :</strong> postId</p>
+      <h6>En-tête HTTP :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "content": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Commentaire ajouté</p>
+    </div>
+  </div>
+  
+  <div class="card mb-4">
+    <div class="card-header bg-light text-dark">
+      GET /api/posts/:postId/comments
+    </div>
+    <div class="card-body">
+      <p>Liste tous les commentaires d’un post.</p>
+      <p><strong>Paramètre URL :</strong> postId</p>
+      <p><strong>Retour :</strong> Tableau des commentaires</p>
+    </div>
+  </div>
+
+  <!-- 🛡️ Modération des messages signalés -->
+
+<!-- DELETE /api/moderation/messages/:id -->
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/moderation/messages/:id
+    </div>
+    <div class="card-body">
+      <p>Supprime définitivement un message signalé.</p>
+      <p><strong>Paramètre URL :</strong> id (ID du message signalé)</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <!-- PATCH /api/moderation/messages/:id/mark-handled -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PATCH /api/moderation/messages/:id/mark-handled
+    </div>
+    <div class="card-body">
+      <p>Marque un message signalé comme “traité”.</p>
+      <p><strong>Paramètre URL :</strong> id (ID du message)</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Signalement mis à jour</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/moderation/messages -->
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+      GET /api/moderation/messages
+    </div>
+    <div class="card-body">
+      <p>Affiche tous les messages signalés pour modération.</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Liste des messages signalés</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/moderation/messages/user/:userId -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/moderation/messages/user/:userId
+    </div>
+    <div class="card-body">
+      <p>Récupère les messages signalés par un utilisateur donné.</p>
+      <p><strong>Paramètre URL :</strong> userId (ID de l’utilisateur)</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Liste des signalements émis par l’utilisateur</p>
+    </div>
+  </div>
+
+  <!-- 📩 Support -->
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      POST /api/support
+    </div>
+    <div class="card-body">
+      <p>Permet à un visiteur ou utilisateur d’envoyer un message de support.</p>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "name": "string",
+    "email": "string",
+    "message": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Message envoyé avec succès</p>
+    </div>
+  </div>
+  
+  <!-- 🔔 Notifications -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/notifications/register-token
+    </div>
+    <div class="card-body">
+      <p>Enregistre un token Firebase Cloud Messaging (FCM) pour recevoir des notifications push.</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "deviceToken": "string"
+  }</code></pre>
+      <p><strong>Retour :</strong> Confirmation d’enregistrement</p>
+    </div>
+  </div>
+  
+  <!-- ℹ️ À propos -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/about
+    </div>
+    <div class="card-body">
+      <p>Récupère les informations générales de la plateforme (section “À propos”).</p>
+      <p><strong>Retour :</strong> Texte ou objet contenant les infos</p>
+    </div>
+  </div>
+
+  <!-- 🎟️ Réservation de ticket -->
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      POST /api/tickets
+    </div>
+    <div class="card-body">
+      <p>Réserve un ticket pour un événement donné.</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "eventId": 123
+  }</code></pre>
+      <p><strong>Retour :</strong> Détails du ticket généré</p>
+    </div>
+  </div>
+  
+  <!-- 👤 Liste des tickets de l’utilisateur -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/tickets/my
+    </div>
+    <div class="card-body">
+      <p>Affiche tous les tickets réservés par l’utilisateur connecté.</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p><strong>Retour :</strong> Liste de tickets</p>
+    </div>
+  </div>
+  
+  <!-- ✅ Scanner un ticket -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      POST /api/tickets/scan
+    </div>
+    <div class="card-body">
+      <p>Valide un ticket à l’entrée (utilisé par l’admin ou organisateur).</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "ticketId": 456
+  }</code></pre>
+      <p><strong>Retour :</strong> Confirmation de validation</p>
+    </div>
+  </div>
+  
+  <!-- 📊 Statistiques de scan -->
+  
+  <div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+      GET /api/tickets/event/:eventId/checkin-stats
+    </div>
+    <div class="card-body">
+      <p>Affiche le nombre de tickets validés et le total pour un événement.</p>
+      <p><strong>Paramètre URL :</strong> eventId</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Statistiques de check-in (ex : 23/50)</p>
+    </div>
+  </div>
+<!-- 👮‍♂️ Gestion des utilisateurs (Admin) -->
+
+<!-- PUT /api/users/:userId/role -->
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+      PUT /api/users/:userId/role
+    </div>
+    <div class="card-body">
+      <p>Modifie le rôle d’un utilisateur (par exemple : user → admin).</p>
+      <p><strong>Paramètre URL :</strong> userId (ID de l’utilisateur)</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <h6>Corps JSON :</h6>
+      <pre><code>{
+    "role": "admin"
+  }</code></pre>
+      <p><strong>Retour :</strong> Objet utilisateur mis à jour</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/users -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      GET /api/users
+    </div>
+    <div class="card-body">
+      <p>Affiche tous les utilisateurs enregistrés sur la plateforme (admin uniquement).</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Liste des utilisateurs</p>
+    </div>
+  </div>
+  
+  <!-- DELETE /api/users/:userId -->
+  <div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+      DELETE /api/users/:userId
+    </div>
+    <div class="card-body">
+      <p>Supprime définitivement un utilisateur de la base (admin uniquement).</p>
+      <p><strong>Paramètre URL :</strong> userId (ID de l’utilisateur)</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Message de confirmation</p>
+    </div>
+  </div>
+  
+  <!-- PUT /api/users/:userId/suspend -->
+  <div class="card mb-4">
+    <div class="card-header bg-secondary text-white">
+      PUT /api/users/:userId/suspend
+    </div>
+    <div class="card-body">
+      <p>Suspend l’utilisateur (il ne pourra plus se connecter jusqu’à réactivation).</p>
+      <p><strong>Paramètre URL :</strong> userId</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Statut de suspension</p>
+    </div>
+  </div>
+  
+  <!-- GET /api/users/export -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">
+      GET /api/users/export
+    </div>
+    <div class="card-body">
+      <p>Exporte tous les utilisateurs au format CSV ou Excel.</p>
+      <h6>En-tête :</h6>
+      <pre><code>Authorization: Bearer &lt;admin token&gt;</code></pre>
+      <p><strong>Retour :</strong> Téléchargement d’un fichier</p>
+    </div>
+  </div>
+    
+  </div>
+</body>
+</html>

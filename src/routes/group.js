@@ -1,22 +1,7 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+const express = require('express');
+const router = express.Router();
+const auth = require('../middlewares/auth');
 
-const Group = sequelize.define('Group', {
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  creatorId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  }
-}, {
-  tableName: 'groups',
-  timestamps: true
-});
+const { getGroupMembers } = require('../controllers/groupController');
 
-module.exports = Group;
+router.get('/:id/members', auth, getGroupMembers);

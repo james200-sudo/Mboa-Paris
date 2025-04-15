@@ -1,0 +1,1206 @@
+openapi: 3.0.0
+info:
+  title: Mboa Paris API
+  version: 1.0.0
+  description: |
+    Cette documentation décrit les routes d’authentification et de gestion de profil
+    pour l’API Mboa Paris. Elle permet aux utilisateurs de s’inscrire, se connecter,
+    gérer leur mot de passe et mettre à jour leur profil personnel.
+servers:
+  - url: http://localhost:5000
+    description: Serveur de développement local
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Créer un nouveau compte utilisateur
+      description: Cette route permet à un utilisateur de s’inscrire.
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+
+  /api/auth/login:
+    post:
+      summary: Connexion d’un utilisateur
+      description: Authentifie un utilisateur et renvoie un token JWT.
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie, retourne l’utilisateur et un token
+
+  /api/auth/forgot-password:
+    post:
+      summary: Demande de réinitialisation de mot de passe
+      description: Envoie un lien de réinitialisation à l’adresse e-mail fournie.
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Email de réinitialisation envoyé
+
+  /api/auth/reset-password:
+    post:
+      summary: Réinitialisation du mot de passe
+      description: Permet de définir un nouveau mot de passe via un token.
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Mot de passe réinitialisé avec succès
+
+  /api/auth/update-profile:
+    put:
+      summary: Mise à jour du profil utilisateur
+      description: Met à jour les informations de l’utilisateur connecté.
+      tags:
+        - Utilisateur
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                bio:
+                  type: string
+                photo:
+                  type: string
+      responses:
+        '200':
+          description: Profil mis à jour avec succès
+
+  /api/moderation/block:
+    post:
+      summary: Bloquer un utilisateur
+      description: |
+        Cette route permet à un utilisateur connecté de bloquer un autre utilisateur.
+        Une fois bloqué, l'utilisateur ciblé ne pourra plus envoyer de messages.
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: integer
+                  description: ID de l'utilisateur à bloquer
+      responses:
+        '201':
+          description: Utilisateur bloqué avec succès
+        '400':
+          description: Requête invalide ou utilisateur déjà bloqué
+        '401':
+          description: Non autorisé
+
+  /api/moderation/unblock:
+    post:
+      summary: Débloquer un utilisateur
+      description: |
+        Cette route permet à un utilisateur connecté de débloquer un utilisateur qu’il avait précédemment bloqué.
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: integer
+                  description: ID de l'utilisateur à débloquer
+      responses:
+        '200':
+          description: Utilisateur débloqué avec succès
+        '404':
+          description: Blocage non trouvé
+        '401':
+          description: Non autorisé
+
+  /api/entreprises:
+    post:
+      summary: Créer une entreprise
+      description: Crée une nouvelle entreprise. Réservé aux administrateurs.
+      tags:
+        - Entreprise
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, address]
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Entreprise créée avec succès
+    get:
+      summary: Liste des entreprises
+      description: Récupère toutes les entreprises accessibles à l'utilisateur connecté.
+      tags:
+        - Entreprise
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des entreprises
+
+  /api/entreprises/{id}:
+    get:
+      summary: Détails d’une entreprise
+      description: Récupère les informations d’une entreprise par son ID.
+      tags:
+        - Entreprise
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de l’entreprise
+
+    put:
+      summary: Modifier une entreprise
+      description: Met à jour les informations d’une entreprise. Réservé aux administrateurs.
+      tags:
+        - Entreprise
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Entreprise mise à jour
+
+    delete:
+      summary: Supprimer une entreprise
+      description: Supprime une entreprise existante. Réservé aux administrateurs.
+      tags:
+        - Entreprise
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Entreprise supprimée avec succès
+
+  /api/entreprises/{id}/reserver:
+    post:
+      summary: Réserver un rendez-vous
+      description: Permet à un utilisateur de réserver un rendez-vous avec une entreprise.
+      tags:
+        - Rendez-vous
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [date, heure]
+              properties:
+                date:
+                  type: string
+                  format: date
+                heure:
+                  type: string
+                  example: "14:00"
+                motif:
+                  type: string
+      responses:
+        '201':
+          description: Rendez-vous réservé avec succès
+
+  /api/entreprises/me/rendezvous:
+    get:
+      summary: Mes rendez-vous
+      description: Récupère tous les rendez-vous de l'utilisateur connecté.
+      tags:
+        - Rendez-vous
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des rendez-vous de l’utilisateur
+
+  /api/entreprises/{id}/rendezvous:
+    get:
+      summary: Rendez-vous d’une entreprise
+      description: Récupère tous les rendez-vous liés à une entreprise donnée. Réservé aux administrateurs.
+      tags:
+        - Rendez-vous
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de l’entreprise
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des rendez-vous pour cette entreprise
+
+  /api/events:
+    get:
+      summary: Liste des événements
+      description: Récupère tous les événements publics (accès libre).
+      tags:
+        - Événements
+      responses:
+        '200':
+          description: Liste des événements disponibles
+
+    post:
+      summary: Créer un événement
+      description: Crée un nouvel événement (réservé aux administrateurs).
+      tags:
+        - Événements
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, date, location]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                location:
+                  type: string
+                image:
+                  type: string
+      responses:
+        '201':
+          description: Événement créé avec succès
+
+  /api/events/{id}:
+    get:
+      summary: Détails d’un événement
+      description: Récupère les informations d’un événement par son ID (accès libre).
+      tags:
+        - Événements
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de l’événement
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de l’événement
+
+    put:
+      summary: Modifier un événement
+      description: Met à jour les informations d’un événement existant (réservé aux administrateurs).
+      tags:
+        - Événements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de l’événement
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                location:
+                  type: string
+                image:
+                  type: string
+      responses:
+        '200':
+          description: Événement mis à jour
+
+    delete:
+      summary: Supprimer un événement
+      description: Supprime un événement existant (réservé aux administrateurs).
+      tags:
+        - Événements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID de l’événement
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Événement supprimé avec succès
+
+  /api/favorites:
+    post:
+      summary: Ajouter un élément en favori
+      description: Permet à l’utilisateur connecté d’ajouter un événement ou une entreprise à ses favoris.
+      tags:
+        - Favoris
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [itemId, itemType]
+              properties:
+                itemId:
+                  type: integer
+                  description: ID de l’élément à ajouter
+                itemType:
+                  type: string
+                  description: Type d’élément (ex. "event", "entreprise")
+                  enum: [event, entreprise]
+      responses:
+        '201':
+          description: Élément ajouté aux favoris
+        '400':
+          description: Requête invalide
+
+    delete:
+      summary: Supprimer un favori
+      description: Supprime un élément des favoris de l’utilisateur connecté.
+      tags:
+        - Favoris
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [itemId, itemType]
+              properties:
+                itemId:
+                  type: integer
+                  description: ID de l’élément à retirer
+                itemType:
+                  type: string
+                  description: Type d’élément (event ou entreprise)
+                  enum: [event, entreprise]
+      responses:
+        '200':
+          description: Élément retiré des favoris
+        '404':
+          description: Élément non trouvé dans les favoris
+
+    get:
+      summary: Récupérer les favoris
+      description: Récupère la liste des favoris de l’utilisateur connecté.
+      tags:
+        - Favoris
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des éléments favoris
+  /api/follows:
+    post:
+      summary: Suivre une entreprise
+      description: Permet à un utilisateur connecté de suivre une entreprise.
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entrepriseId]
+              properties:
+                entrepriseId:
+                  type: integer
+                  description: ID de l’entreprise à suivre
+      responses:
+        '201':
+          description: Entreprise suivie avec succès
+
+    delete:
+      summary: Se désabonner d’une entreprise
+      description: Permet à un utilisateur de ne plus suivre une entreprise.
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entrepriseId]
+              properties:
+                entrepriseId:
+                  type: integer
+                  description: ID de l’entreprise à ne plus suivre
+      responses:
+        '200':
+          description: Suivi supprimé avec succès
+
+    get:
+      summary: Mes entreprises suivies
+      description: Retourne la liste des entreprises suivies par l’utilisateur connecté.
+      tags:
+        - Entreprises
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des entreprises suivies
+  /api/groups/{id}/members:
+    get:
+      summary: Liste des membres d’un groupe
+      description: Retourne la liste des membres inscrits dans un groupe spécifique.
+      tags:
+        - Groupes
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: ID du groupe
+      responses:
+        '200':
+          description: Liste des membres du groupe
+
+  /api/group-messages:
+    post:
+      summary: Envoyer un message dans un groupe
+      description: Permet à un utilisateur d’envoyer un message dans un groupe auquel il appartient.
+      tags:
+        - Groupes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [groupId, content]
+              properties:
+                groupId:
+                  type: integer
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Message envoyé au groupe
+  /api/messages:
+    post:
+      summary: Envoyer un message privé
+      description: Envoie un message à un autre utilisateur (si non bloqué). Nécessite authentification.
+      tags:
+        - Messagerie privée
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [receiverId, content]
+              properties:
+                receiverId:
+                  type: integer
+                  description: ID de l’utilisateur destinataire
+                content:
+                  type: string
+                  description: Contenu du message
+      responses:
+        '201':
+          description: Message envoyé avec succès
+        '403':
+          description: Vous avez bloqué ou êtes bloqué par ce destinataire
+
+  /api/messages/{userId}:
+    get:
+      summary: Récupérer une conversation privée
+      description: Récupère tous les messages entre l’utilisateur connecté et un autre utilisateur.
+      tags:
+        - Messagerie privée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID de l’autre utilisateur dans la conversation
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des messages de la conversation
+
+  /api/messages/{id}/read:
+    put:
+      summary: Marquer un message comme lu
+      description: Met à jour le statut d’un message pour le marquer comme lu par le destinataire.
+      tags:
+        - Messagerie privée
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du message à mettre à jour
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Message marqué comme lu
+  /api/posts:
+    get:
+      summary: Liste des publications
+      description: Récupère toutes les publications visibles (non signalées).
+      tags:
+        - Publications
+      responses:
+        '200':
+          description: Liste des posts
+
+    post:
+      summary: Créer une publication
+      description: Crée une nouvelle publication avec ou sans image. L’utilisateur doit être connecté.
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  description: Contenu du post
+                image:
+                  type: string
+                  format: binary
+                  description: Image associée (optionnelle)
+      responses:
+        '201':
+          description: Post créé avec succès
+
+  /api/posts/{id}:
+    get:
+      summary: Détails d’un post
+      description: Récupère les informations d’une publication par son ID.
+      tags:
+        - Publications
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails du post
+
+    put:
+      summary: Modifier un post
+      description: Met à jour le contenu d’un post existant (auteur uniquement).
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                image:
+                  type: string
+      responses:
+        '200':
+          description: Post mis à jour
+
+    delete:
+      summary: Supprimer un post
+      description: Supprime une publication (auteur ou administrateur).
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post supprimé
+
+  /api/posts/{postId}/report:
+    put:
+      summary: Signaler un post
+      description: Permet à un utilisateur de signaler un post problématique.
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post signalé
+
+  /api/posts/{postId}/unreport:
+    put:
+      summary: Annuler le signalement d’un post
+      description: Permet à un administrateur de désignaler un post.
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Signalement annulé
+
+  /api/posts/reported:
+    get:
+      summary: Liste des posts signalés
+      description: Récupère tous les posts signalés pour modération (admin uniquement).
+      tags:
+        - Publications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des posts signalés
+  /api/posts/{postId}/like:
+    post:
+      summary: Liker ou retirer un like sur un post
+      description: L’utilisateur connecté peut liker ou retirer son like d’un post.
+      tags:
+        - Interactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Like ajouté ou retiré avec succès
+
+  /api/posts/{postId}/likes:
+    get:
+      summary: Liste des likes d’un post
+      description: Récupère les utilisateurs ayant liké un post donné.
+      tags:
+        - Interactions
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des likes
+
+  /api/posts/{postId}/comments:
+    post:
+      summary: Ajouter un commentaire
+      description: L’utilisateur connecté ajoute un commentaire à un post.
+      tags:
+        - Interactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Commentaire ajouté
+
+    get:
+      summary: Liste des commentaires
+      description: Récupère tous les commentaires associés à un post.
+      tags:
+        - Interactions
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des commentaires
+  /api/moderation/messages/{id}:
+    delete:
+      summary: Supprimer un message signalé
+      description: Permet à un administrateur de supprimer un message signalé.
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: ID du message à supprimer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Message supprimé avec succès
+
+  /api/moderation/messages/{id}/mark-handled:
+    patch:
+      summary: Marquer un message signalé comme traité
+      description: Permet à un administrateur de changer le statut d’un signalement 
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: ID du message signalé
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Signalement marqué comme traité
+
+  /api/moderation/messages:
+    get:
+      summary: Liste des messages signalés
+      description: Récupère tous les messages signalés (réservé aux administrateurs).
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des messages signalés
+
+  /api/moderation/messages/user/{userId}:
+    get:
+      summary: Signalements émis par un utilisateur
+      description: Affiche tous les messages signalés par un utilisateur spécifique.
+      tags:
+        - Modération
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          description: ID de l’utilisateur
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des messages signalés par cet utilisateur
+  /api/support:
+    post:
+      summary: Envoyer un message de support
+      description: Permet à un utilisateur ou visiteur d’envoyer un message au support.
+      tags:
+        - Support
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, message]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Message envoyé avec succès
+
+  /api/notifications/register-token:
+    post:
+      summary: Enregistrer un token FCM
+      description: Enregistre le token Firebase pour recevoir des notifications push.
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deviceToken]
+              properties:
+                deviceToken:
+                  type: string
+                  description: Jeton FCM
+      responses:
+        '200':
+          description: Token enregistré avec succès
+
+  /api/about:
+    get:
+      summary: Récupérer les informations "À propos"
+      description: Retourne les informations générales affichées sur la page À propos.
+      tags:
+        - Général
+      responses:
+        '200':
+          description: Informations "À propos"
+  /api/tickets:
+    post:
+      summary: Réserver un ticket
+      description: Permet à un utilisateur connecté de réserver un ticket pour un événement.
+      tags:
+        - Tickets
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eventId]
+              properties:
+                eventId:
+                  type: integer
+                  description: ID de l’événement concerné
+      responses:
+        '201':
+          description: Ticket réservé avec succès
+
+  /api/tickets/my:
+    get:
+      summary: Récupérer mes tickets
+      description: Retourne la liste des tickets réservés par l’utilisateur connecté.
+      tags:
+        - Tickets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des tickets réservés
+
+  /api/tickets/scan:
+    post:
+      summary: Scanner un ticket
+      description: Valide un ticket via son QR code (utilisation par les organisateurs/admins uniquement).
+      tags:
+        - Tickets
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ticketId]
+              properties:
+                ticketId:
+                  type: integer
+                  description: ID ou code du ticket à valider
+      responses:
+        '200':
+          description: Ticket validé avec succès
+
+  /api/tickets/event/{eventId}/checkin-stats:
+    get:
+      summary: Statistiques de check-in
+      description: Affiche les statistiques de tickets validés pour un événement donné (admin).
+      tags:
+        - Tickets
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails du nombre de tickets validés / total
+  /api/users/{userId}/role:
+    put:
+      summary: Modifier le rôle d’un utilisateur
+      description: Permet à un administrateur de modifier le rôle d’un utilisateur (user → admin).
+      tags:
+        - Utilisateurs (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [user, admin]
+                  description: Nouveau rôle de l’utilisateur
+      responses:
+        '200':
+          description: Rôle mis à jour avec succès
+
+  /api/users:
+    get:
+      summary: Lister tous les utilisateurs
+      description: Accessible uniquement par un administrateur.
+      tags:
+        - Utilisateurs (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste complète des utilisateurs
+
+  /api/users/{userId}:
+    delete:
+      summary: Supprimer un utilisateur
+      description: Permet à un administrateur de supprimer un utilisateur existant.
+      tags:
+        - Utilisateurs (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+
+  /api/users/{userId}/suspend:
+    put:
+      summary: Suspendre un utilisateur
+      description: Désactive temporairement un compte utilisateur (soft delete).
+      tags:
+        - Utilisateurs (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur suspendu
+
+  /api/users/export:
+    get:
+      summary: Exporter les utilisateurs
+      description: Exporte tous les utilisateurs sous forme de fichier CSV ou Excel.
+      tags:
+        - Utilisateurs (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Fichier téléchargé avec succès
