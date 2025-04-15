@@ -26,7 +26,7 @@ exports.login = async (req, res) => {
 
     console.log('🧾 User found:', user.email);
     console.log('🔐 Password (raw from request):', password);
-    console.log('🧊 Password (hashed in DB):', user.password);
+    console.log('🧊 Password (hashed in DB) :', user.password);
 
     const isValid = await bcrypt.compare(password, user.password);
     console.log('✅ Password match:', isValid);
